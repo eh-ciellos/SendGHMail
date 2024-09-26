@@ -8,7 +8,7 @@ inputs:
   Subject:
     description: 'Subject of the email'
     required: true
-  BodyContentBase64:
+  emailBodyBase64:
     description: 'Base64-encoded body content'
     required: true
   FromEmail:
@@ -25,4 +25,4 @@ runs:
     - name: 'Send Email Using PowerShell Script'
       shell: pwsh
       run: |
-        try { ${{ github.action_path }}/SendMail.ps1 -ToEmail ${{ inputs.ToEmail }} -Subject ${{ inputs.Subject }} -BodyContentBase64 ${{ inputs.BodyContentBase64 }} -FromEmail ${{ inputs.FromEmail }} -AzureCredentialsJson ${{ inputs.AzureCredentialsJson }} } catch { Write-Host "::Error::Unexpected error when running action ($($_.Exception.Message))"; exit 1 }
+        try { ${{ github.action_path }}/SendMail.ps1 -ToEmail ${{ inputs.ToEmail }} -Subject ${{ inputs.Subject }} -emailBodyBase64 ${{ inputs.emailBodyBase64 }} -FromEmail ${{ inputs.FromEmail }} -AzureCredentialsJson ${{ inputs.AzureCredentialsJson }} } catch { Write-Host "::Error::Unexpected error when running action ($($_.Exception.Message))"; exit 1 }

@@ -1,14 +1,22 @@
+param(
+        [string]$ToEmail,
+        [string]$Subject,
+        [string]$emailBodyBase64,  # Ensure correct parameter name
+        [string]$FromEmail,
+        [string]$AzureCredentialsJson
+    )
+
 function Send-Email {
     param(
         [string]$ToEmail,
         [string]$Subject,
-        [string]$emailBodyBase64,  # Use the correct parameter name
+        [string]$emailBodyBase64,  # Ensure correct parameter name
         [string]$FromEmail,
         [string]$AzureCredentialsJson
     )
 
     # Step 1: Decode the Base64 email body
-    if ($emailBodyBase64) {
+    if (-not [string]::IsNullOrEmpty($emailBodyBase64)) {
         $byteArray = [Convert]::FromBase64String($emailBodyBase64)
         $BodyContent = [Text.Encoding]::UTF8.GetString($byteArray)
         Write-Host "Decoded email body."

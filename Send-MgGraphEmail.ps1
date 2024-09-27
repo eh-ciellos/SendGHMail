@@ -2,41 +2,48 @@ function Send-Email {
     param(
         [string]$ToEmail,
         [string]$Subject,
-        [string]$emailBodyBase64,
+        [string]$BodyContentBase64,
         [string]$FromEmail,
         [string]$AzureCredentialsJson
     )
 
-    # Step 1: Parse the Azure Credentials
-    $azureCredentials = $AzureCredentialsJson | ConvertFrom-Json
+    # Step 1: Decode the Base64 email body
+    if ($BodyContentBase64) {
+        $byteArray = [Convert]::FromBase64String($BodyContentBase64)
+        $BodyContent = [Text.Encoding]::UTF8.GetString($byteArray)
+    } else {
+        Write-Host "Error: BodyContentBase64 is empty"
+        exit 1
+    }
 
-    # Extract values from the parsed JSON object
-    $TenantId = $azureCredentials.tenantId
-    $ClientId = $azureCredentials.clientId
-    $ClientSecret = $azureCredentials.clientSecret
+    # Step 2: Parse Azure credentials
+    try {
+        $AzureCredentials = $AzureCredentialsJson | ConvertFrom-Json
+    } catch {
+        Write-Host "Error parsing AzureCredentialsJson"
+        exit 1
+    }
 
-    # Step 2: Decode the Base64 email body to HTML
-    $byteArray = [Convert]::FromBase64String($BodyContentBase64)
-    $BodyContent = [Text.Encoding]::UTF8.GetString($byteArray)
-
+    # Step 3: Connect to Microsoft Graph
+    try {
     # Ensure necessary modules are imported
-    Install-Module -Name Microsoft.Graph.Authentication -Scope CurrentUser -Force
-    Install-Module -Name Microsoft.Graph.Users.Actions -Scope CurrentUser -Force
-    Install-Module -Name Microsoft.Graph.Applications -Scope CurrentUser -Force
-    Install-Module -Name Microsoft.Graph.Mail -Scope CurrentUser -Force
-    Import-Module -Name Microsoft.Graph.Authentication -Scope Local -Force
-    Import-Module -Name Microsoft.Graph.Users.Actions -Scope Local -Force
-    Import-Module -Name Microsoft.Graph.Applications -Scope Local -Force
-    Import-Module -Name Microsoft.Graph.Mail -Scope Local -Force
+        Install-Module -Name Microsoft.Graph.Authentication -Scope CurrentUser -Force
+        Install-Module -Name Microsoft.Graph.Users.Actions -Scope CurrentUser -Force
+        Install-Module -Name Microsoft.Graph.Applications -Scope CurrentUser -Force
+        Install-Module -Name Microsoft.Graph.Mail -Scope CurrentUser -Force
+        Import-Module -Name Microsoft.Graph.Authentication -Scope Local -Force
+        Import-Module -Name Microsoft.Graph.Users.Actions -Scope Local -Force
+        Import-Module -Name Microsoft.Graph.Applications -Scope Local -Force
+        Import-Module -Name Microsoft.Graph.Mail -Scope Local -Force
+        $secureClientSecret = ConvertTo-SecureString -String $AzureCredentials.clientSecret -AsPlainText -Force
+        $ClientSecretCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AzureCredentials.clientId, $secureClientSecret
+        Connect-MgGraph -TenantId $AzureCredentials.tenantId -ClientSecretCredential $ClientSecretCredential -NoWelcome
+    } catch {
+        Write-Host "Error connecting to Microsoft Graph: $($_.Exception.Message)"
+        exit 1
+    }
 
-    # Create a PSCredential object for the client secret
-    $secureClientSecret = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
-    $ClientSecretCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ClientId, $secureClientSecret
-
-    # Connect to Microsoft Graph using client credentials
-    Connect-MgGraph -TenantId $TenantId -ClientSecretCredential $ClientSecretCredential -NoWelcome
-
-    # Create the email message object
+    # Step 4: Create the email message object
     $message = @{
         Subject = $Subject
         ToRecipients = @(
@@ -52,12 +59,15 @@ function Send-Email {
         }
     }
 
-    # Send the email
-    Send-MgUserMail -UserId $FromEmail -Message $message -SaveToSentItems
-
-    # Output for logging or debugging
-    Write-Host "Email sent to $ToEmail with subject: '$Subject'"
+    # Step 5: Send the email
+    try {
+        Send-MgUserMail -UserId $FromEmail -Message $message -SaveToSentItems
+        Write-Host "Email sent to $ToEmail successfully."
+    } catch {
+        Write-Host "Error sending email: $($_.Exception.Message)"
+        exit 1
+    }
 }
 
-# Example usage: replace this with your actual values or pass them via inputs in a composite action
-# Send-Email -ToEmail "recipient@example.com" -Subject "Test Email" -BodyContentBase64 "<Base64EncodedHTML>" -FromEmail "your-email@ciellos.com" -AzureCredentialsJson "<AzureCredentialsJSON>"
+# Call the function to send the email
+Send-Email -ToEmail $ToEmail -Subject $Subject -BodyContentBase64 $BodyContentBase64 -FromEmail $FromEmail -AzureCredentialsJson $AzureCredentialsJson

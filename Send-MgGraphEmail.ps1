@@ -2,7 +2,7 @@ function Send-Email {
     param(
         [string]$ToEmail,
         [string]$Subject,
-        [string]$emailBodyBase64,
+        [string]$emailBodyBase64,  # Use the correct parameter name
         [string]$FromEmail,
         [string]$AzureCredentialsJson
     )
@@ -26,28 +26,7 @@ function Send-Email {
         exit 1
     }
 
-    # Step 3: Install and import necessary modules if needed
-    try {
-        if (-not (Get-Module -Name Microsoft.Graph.Authentication -ListAvailable)) {
-            Write-Host "Installing Microsoft Graph modules..."
-            Install-Module -Name Microsoft.Graph.Authentication -Scope CurrentUser -Force
-            Install-Module -Name Microsoft.Graph.Users.Actions -Scope CurrentUser -Force
-            Install-Module -Name Microsoft.Graph.Applications -Scope CurrentUser -Force
-            Install-Module -Name Microsoft.Graph.Mail -Scope CurrentUser -Force
-        }
-
-        Import-Module -Name Microsoft.Graph.Authentication -Scope Local -Force
-        Import-Module -Name Microsoft.Graph.Users.Actions -Scope Local -Force
-        Import-Module -Name Microsoft.Graph.Applications -Scope Local -Force
-        Import-Module -Name Microsoft.Graph.Mail -Scope Local -Force
-        Write-Host "Microsoft Graph modules imported successfully."
-
-    } catch {
-        Write-Host "Error installing or importing Microsoft Graph modules: $($_.Exception.Message)"
-        exit 1
-    }
-
-    # Step 4: Connect to Microsoft Graph
+    # Step 3: Connect to Microsoft Graph
     try {
         $secureClientSecret = ConvertTo-SecureString -String $AzureCredentials.clientSecret -AsPlainText -Force
         $ClientSecretCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AzureCredentials.clientId, $secureClientSecret
@@ -58,7 +37,7 @@ function Send-Email {
         exit 1
     }
 
-    # Step 5: Create the email message object
+    # Step 4: Create the email message object
     $message = @{
         Subject = $Subject
         ToRecipients = @(
@@ -74,7 +53,7 @@ function Send-Email {
         }
     }
 
-    # Step 6: Send the email
+    # Step 5: Send the email
     try {
         Send-MgUserMail -UserId $FromEmail -Message $message -SaveToSentItems
         Write-Host "Email sent to $ToEmail successfully."

@@ -8,7 +8,7 @@ function Send-Email {
     )
 
     # Step 1: Decode the Base64 email body
-    if ($BodyContentBase64) {
+    if ($emailBodyBase64) {
         $byteArray = [Convert]::FromBase64String($emailBodyBase64)
         $BodyContent = [Text.Encoding]::UTF8.GetString($byteArray)
     } else {
@@ -70,4 +70,4 @@ function Send-Email {
 }
 
 # Call the function to send the email
-Send-Email -ToEmail $ToEmail -Subject $Subject -BodyContentBase64 $BodyContentBase64 -FromEmail $FromEmail -AzureCredentialsJson $AzureCredentialsJson
+Send-Email -ToEmail $ToEmail -Subject $Subject -BodyContentBase64 $emailBodyBase64 -FromEmail $FromEmail -AzureCredentialsJson $AzureCredentialsJson

@@ -2,14 +2,14 @@ function Send-Email {
     param(
         [string]$ToEmail,
         [string]$Subject,
-        [string]$BodyContentBase64,
+        [string]$emailBodyBase64,
         [string]$FromEmail,
         [string]$AzureCredentialsJson
     )
 
     # Step 1: Decode the Base64 email body
     if ($BodyContentBase64) {
-        $byteArray = [Convert]::FromBase64String($BodyContentBase64)
+        $byteArray = [Convert]::FromBase64String($emailBodyBase64)
         $BodyContent = [Text.Encoding]::UTF8.GetString($byteArray)
     } else {
         Write-Host "Error: BodyContentBase64 is empty"

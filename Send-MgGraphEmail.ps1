@@ -1,7 +1,8 @@
 param(
     [string]$ToEmail,
+    [string]$CcEmail,  # New parameter for CC email addresses
     [string]$Subject,
-    [string]$emailBodyBase64,  # Ensure correct parameter name
+    [string]$emailBodyBase64,
     [string]$FromEmail,
     [string]$AzureCredentialsJson
 )
@@ -9,8 +10,9 @@ param(
 function Send-Email {
     param(
         [string]$ToEmail,
+        [string]$CcEmail,  # New parameter for CC email addresses
         [string]$Subject,
-        [string]$emailBodyBase64,  # Ensure correct parameter name
+        [string]$emailBodyBase64,
         [string]$FromEmail,
         [string]$AzureCredentialsJson
     )
@@ -46,8 +48,16 @@ function Send-Email {
     }
 
     # Step 4: Create the email message object
-    # Split ToEmail into an array of addresses if multiple addresses are provided
+    # Split ToEmail and CcEmail into arrays of addresses
     $ToRecipients = $ToEmail -split ',' | ForEach-Object {
+        @{
+            EmailAddress = @{
+                Address = $_.Trim()
+            }
+        }
+    }
+
+    $CcRecipients = $CcEmail -split ',' | ForEach-Object {
         @{
             EmailAddress = @{
                 Address = $_.Trim()
@@ -58,6 +68,7 @@ function Send-Email {
     $message = @{
         Subject = $Subject
         ToRecipients = $ToRecipients
+        CcRecipients = $CcRecipients
         Body = @{
             ContentType = "HTML"
             Content = $BodyContent
@@ -75,4 +86,4 @@ function Send-Email {
 }
 
 # Call the function to send the email
-Send-Email -ToEmail $ToEmail -Subject $Subject -emailBodyBase64 $emailBodyBase64 -FromEmail $FromEmail -AzureCredentialsJson $AzureCredentialsJson
+Send-Email -ToEmail $ToEmail -CcEmail $CcEmail -Subject $Subject -emailBodyBase64 $emailBodyBase64 -FromEmail $FromEmail -AzureCredentialsJson $AzureCredentialsJson

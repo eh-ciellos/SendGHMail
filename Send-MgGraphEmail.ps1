@@ -1,10 +1,10 @@
 param(
-        [string]$ToEmail,
-        [string]$Subject,
-        [string]$emailBodyBase64,  # Ensure correct parameter name
-        [string]$FromEmail,
-        [string]$AzureCredentialsJson
-    )
+    [string]$ToEmail,
+    [string]$Subject,
+    [string]$emailBodyBase64,  # Ensure correct parameter name
+    [string]$FromEmail,
+    [string]$AzureCredentialsJson
+)
 
 function Send-Email {
     param(
@@ -46,15 +46,18 @@ function Send-Email {
     }
 
     # Step 4: Create the email message object
+    # Split ToEmail into an array of addresses if multiple addresses are provided
+    $ToRecipients = $ToEmail -split ',' | ForEach-Object {
+        @{
+            EmailAddress = @{
+                Address = $_.Trim()
+            }
+        }
+    }
+
     $message = @{
         Subject = $Subject
-        ToRecipients = @(
-            @{
-                EmailAddress = @{
-                    Address = $ToEmail
-                }
-            }
-        )
+        ToRecipients = $ToRecipients
         Body = @{
             ContentType = "HTML"
             Content = $BodyContent

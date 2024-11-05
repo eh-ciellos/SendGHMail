@@ -25,4 +25,4 @@ runs:
     - name: 'Send Email Using PowerShell Script'
       shell: pwsh
       run: |
-        try { ${{ github.action_path }}/Send-MgGraphEmail.ps1 -ToEmail ${{ inputs.ToEmail }} -Subject ${{ inputs.Subject }} -emailBodyBase64 ${{ inputs.emailBodyBase64 }} -FromEmail ${{ inputs.FromEmail }} -AzureCredentialsJson ${{ inputs.AzureCredentialsJson }} } catch { Write-Host "::Error::Unexpected error when running action ($($_.Exception.Message))"; exit 1 }
+        try { ${{ github.action_path }}/Send-MgGraphEmail.ps1 -ToEmail ${{ inputs.ToEmail }} -CcEmail ${{ inputs.CcEmail }} -Subject ${{ inputs.Subject }} -emailBodyBase64 ${{ inputs.emailBodyBase64 }} -FromEmail ${{ inputs.FromEmail }} -AzureCredentialsJson ${{ inputs.AzureCredentialsJson }} } catch { Write-Host "::Error::Unexpected error when running action ($($_.Exception.Message))"; exit 1 }

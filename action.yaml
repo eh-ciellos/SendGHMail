@@ -5,9 +5,6 @@ inputs:
   ToEmail:
     description: 'Recipient email address'
     required: true
-  CcEmail:
-    description: 'Cc email address'
-    required: false
   Subject:
     description: 'Subject of the email'
     required: true

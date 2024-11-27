@@ -1,31 +1,19 @@
 param(
-    [Parameter(HelpMessage = "Email recipeints to send to", Mandatory = $true)]
     [string]$ToEmail,
-    [Parameter(HelpMessage = "Email recipeints in Cc", Mandatory = $false)]
-    [string]$CcEmail,
-    [Parameter(HelpMessage = "Email subject", Mandatory = $true)]
+    [string]$CcEmail,  # New parameter for CC email addresses
     [string]$Subject,
-    [Parameter(HelpMessage = "Email body", Mandatory = $true)]
     [string]$emailBodyBase64,
-    [Parameter(HelpMessage = "Email recipeints from", Mandatory = $true)]
     [string]$FromEmail,
-    [Parameter(HelpMessage = "Azure Credentials of AAD App to SendMail", Mandatory = $true)]
     [string]$AzureCredentialsJson
 )
 
 function Send-Email {
     param(
-        [Parameter(HelpMessage = "Email recipeints to send to", Mandatory = $true)]
         [string]$ToEmail,
-        [Parameter(HelpMessage = "Email recipeints in Cc", Mandatory = $false)]
-        [string]$CcEmail,
-        [Parameter(HelpMessage = "Email subject", Mandatory = $true)]
+        [string]$CcEmail,  # New parameter for CC email addresses
         [string]$Subject,
-        [Parameter(HelpMessage = "Email body", Mandatory = $true)]
         [string]$emailBodyBase64,
-        [Parameter(HelpMessage = "Email recipeints from", Mandatory = $true)]
         [string]$FromEmail,
-        [Parameter(HelpMessage = "Azure Credentials of AAD App to SendMail", Mandatory = $true)]
         [string]$AzureCredentialsJson
     )
 

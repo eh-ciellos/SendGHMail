@@ -3,10 +3,10 @@ description: 'A composite action to send an email using Microsoft Graph'
 
 inputs:
   ToEmail:
-    description: 'Recipient email address'
+    description: 'Recipient email address(es), comma-separated if multiple'
     required: true
   CcEmail:
-    description: 'Cc email address'
+    description: 'Cc email address(es), comma-separated if multiple'
     required: false
   Subject:
     description: 'Subject of the email'
@@ -15,12 +15,12 @@ inputs:
     description: 'Base64-encoded body content'
     required: true
   FromEmail:
-    description: 'Sender email address'
+    description: 'Sender email address (comma-separated if multiple)'
     required: true
-    default: 'emanuele.hamzaraj@ciellos.com'
   AzureCredentialsJson:
     description: 'Azure credentials JSON secret'
     required: true
+
 
 runs:
   using: "composite"

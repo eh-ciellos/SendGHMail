@@ -14,7 +14,7 @@ inputs:
   FromEmail:
     description: 'Sender email address'
     required: true
-    default: 'emanuele.hamzaraj@ciellos.com'
+    default: 'test@gmail.com'
   AzureCredentialsJson:
     description: 'Azure credentials JSON secret'
     required: true
